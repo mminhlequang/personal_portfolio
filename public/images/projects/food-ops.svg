@@ -1,0 +1,15 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g4" x1="0" y1="0" x2="1280" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020617"/>
+      <stop offset="1" stop-color="#0E7490"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#g4)"/>
+  <rect x="130" y="120" width="1020" height="500" rx="28" fill="#0F172A" fill-opacity="0.82"/>
+  <path d="M190 500L290 430L390 470L490 360L590 310L690 350L790 280L890 260L990 210L1090 250" stroke="#22D3EE" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="390" cy="470" r="14" fill="#BAE6FD"/>
+  <circle cx="690" cy="350" r="14" fill="#BAE6FD"/>
+  <circle cx="990" cy="210" r="14" fill="#BAE6FD"/>
+  <text x="170" y="98" fill="#E2E8F0" font-size="34" font-family="Arial">Delivery Operations</text>
+</svg>

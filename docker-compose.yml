@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: personal-portfolio:latest
+    container_name: personal-portfolio
+    ports:
+      - "3999:3999"
+    environment:
+      - NODE_ENV=production
+      - PORT=3999
+      - HOSTNAME=0.0.0.0
