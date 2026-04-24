@@ -19,13 +19,13 @@ npm run dev
 
 Open http://localhost:3000.
 
-Run on port 3999 in local dev:
+Run on port 3000 in local dev:
 
 ```bash
-npm run dev:3999
+npm run dev:3000
 ```
 
-## Docker (Port 3999)
+## Docker (Port 3000)
 
 Build and run with Docker Compose:
 
@@ -33,7 +33,7 @@ Build and run with Docker Compose:
 docker compose up --build
 ```
 
-Open http://localhost:3999.
+Open http://localhost:3000.
 
 ## Data-Driven Structure
 

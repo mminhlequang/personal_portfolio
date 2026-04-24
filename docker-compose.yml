@@ -8,8 +8,8 @@ services:
     image: personal-portfolio:latest
     container_name: personal-portfolio
     ports:
-      - "3999:3999"
+      - "3002:3000"
     environment:
       - NODE_ENV=production
-      - PORT=3999
+      - PORT=3000
       - HOSTNAME=0.0.0.0
