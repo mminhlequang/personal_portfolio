@@ -1,9 +1,20 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Code2, FileText, Globe } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Code2,
+  FileText,
+  Globe,
+  Images,
+  X,
+} from "lucide-react";
 import type { Locale, Project, ProjectLayout } from "@/lib/data";
+import { getUiMessages } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type ProjectCardProps = {
@@ -29,12 +40,52 @@ function normalizeLayout(layout: ProjectLayout | undefined, index: number): Proj
 
 export function ProjectCard({ project, locale, index }: ProjectCardProps) {
   const layout = normalizeLayout(project.ui?.layout, index);
+  const t = getUiMessages(locale);
+  const galleryImages = useMemo(
+    () => (project.images.length > 0 ? project.images : [project.thumbnail]),
+    [project.images, project.thumbnail],
+  );
+  const hasManyImages = galleryImages.length > 1;
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
+  const showNextImage = () => {
+    setActiveImageIndex((prev) => (prev + 1) % galleryImages.length);
+  };
+
+  const showPreviousImage = () => {
+    setActiveImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  };
+
+  useEffect(() => {
+    if (!isGalleryOpen) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsGalleryOpen(false);
+      }
+      if (event.key === "ArrowRight" && hasManyImages) {
+        setActiveImageIndex((prev) => (prev + 1) % galleryImages.length);
+      }
+      if (event.key === "ArrowLeft" && hasManyImages) {
+        setActiveImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [hasManyImages, isGalleryOpen, galleryImages.length]);
 
   const links = [
     project.links.live
       ? {
         href: project.links.live,
-        label: locale === "vi" ? "Website" : "Live site",
+        label: t.liveSite,
         icon: Globe,
       }
       : null,
@@ -48,7 +99,7 @@ export function ProjectCard({ project, locale, index }: ProjectCardProps) {
     project.links.caseStudy
       ? {
         href: project.links.caseStudy,
-        label: locale === "vi" ? "Case Study" : "Case Study",
+        label: t.caseStudy,
         icon: FileText,
       }
       : null,
@@ -80,14 +131,51 @@ export function ProjectCard({ project, locale, index }: ProjectCardProps) {
       />
 
       <div className="relative h-52 w-full overflow-hidden border-b border-white/10 sm:h-60">
-        <Image
-          src={project.thumbnail}
-          alt={`${project.title[locale]} screenshot`}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          sizes="(max-width: 1024px) 100vw, 50vw"
-        />
+        <button
+          type="button"
+          onClick={() => setIsGalleryOpen(true)}
+          className="absolute inset-0 z-10"
+          aria-label={t.gallery.open}
+        >
+          <Image
+            src={galleryImages[activeImageIndex]}
+            alt={`${project.title[locale]} screenshot ${activeImageIndex + 1}`}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+        </button>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+        <div className="absolute bottom-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-slate-900/70 px-2.5 py-1 text-[11px] text-slate-100 backdrop-blur">
+          <Images className="h-3.5 w-3.5" />
+          {activeImageIndex + 1}/{galleryImages.length}
+        </div>
+        {hasManyImages ? (
+          <>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                showPreviousImage();
+              }}
+              className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/45 p-1.5 text-white transition hover:bg-black/70"
+              aria-label={t.gallery.previous}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                showNextImage();
+              }}
+              className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/45 p-1.5 text-white transition hover:bg-black/70"
+              aria-label={t.gallery.next}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </>
+        ) : null}
         {project.logo ? (
           <div className="absolute left-4 top-4 rounded-lg border border-white/15 bg-slate-900/80 p-2 backdrop-blur">
             <Image src={project.logo} alt={`${project.title[locale]} logo`} width={28} height={28} />
@@ -107,7 +195,7 @@ export function ProjectCard({ project, locale, index }: ProjectCardProps) {
           </h3>
           {project.highlight ? (
             <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-200">
-              {locale === "vi" ? "Noi bat" : "Highlight"}
+              {t.highlight}
             </span>
           ) : null}
         </div>
@@ -148,6 +236,87 @@ export function ProjectCard({ project, locale, index }: ProjectCardProps) {
           })}
         </div>
       </div>
+
+      {isGalleryOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            onClick={() => setIsGalleryOpen(false)}
+            className="absolute right-4 top-4 rounded-full border border-white/25 bg-black/40 p-2 text-white transition hover:bg-black/70"
+            aria-label={t.gallery.close}
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          <div className="relative w-full max-w-6xl space-y-4">
+            <div className="relative h-[60vh] overflow-hidden rounded-2xl border border-white/20 bg-slate-950/70">
+              <Image
+                src={galleryImages[activeImageIndex]}
+                alt={`${project.title[locale]} gallery image ${activeImageIndex + 1}`}
+                fill
+                className="object-contain"
+                sizes="100vw"
+                priority
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-3 text-sm text-slate-100">
+              <span>
+                {t.gallery.imageCount} {activeImageIndex + 1}/{galleryImages.length}
+              </span>
+
+              {hasManyImages ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={showPreviousImage}
+                    className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-xs transition hover:bg-black/70"
+                    aria-label={t.gallery.previous}
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    {t.gallery.previous}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={showNextImage}
+                    className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-xs transition hover:bg-black/70"
+                    aria-label={t.gallery.next}
+                  >
+                    {t.gallery.next}
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
+            {hasManyImages ? (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {galleryImages.map((image, imageIndex) => (
+                  <button
+                    type="button"
+                    key={`${project.id}-gallery-${image}`}
+                    onClick={() => setActiveImageIndex(imageIndex)}
+                    className={cn(
+                      "relative h-16 w-24 flex-none overflow-hidden rounded-lg border transition",
+                      imageIndex === activeImageIndex
+                        ? "border-cyan-300"
+                        : "border-white/20 hover:border-white/40",
+                    )}
+                  >
+                    <Image
+                      src={image}
+                      alt={`${project.title[locale]} thumbnail ${imageIndex + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="96px"
+                    />
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </motion.article>
   );
 }

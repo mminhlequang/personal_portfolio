@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { Locale, ProjectCategory } from "@/lib/data";
+import { getUiMessages } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type CategoryTabsProps = {
@@ -17,6 +18,8 @@ export function CategoryTabs({
   selected,
   onSelect,
 }: CategoryTabsProps) {
+  const t = getUiMessages(locale);
+
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-black/20 p-2 backdrop-blur-md">
       <button
@@ -36,7 +39,7 @@ export function CategoryTabs({
             transition={{ type: "spring", stiffness: 260, damping: 25 }}
           />
         )}
-        <span className="relative z-10">{locale === "vi" ? "Tat ca" : "All"}</span>
+        <span className="relative z-10">{t.allCategories}</span>
       </button>
 
       {categories.map((category) => {

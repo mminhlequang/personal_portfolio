@@ -2,7 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { BriefcaseBusiness, Languages, Sparkles } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Globe,
+  Languages,
+  Mail,
+  MapPin,
+  Phone,
+  Share2,
+  Sparkles,
+} from "lucide-react";
 import {
   allProjects,
   featuredProject,
@@ -16,6 +25,7 @@ import { CategoryTabs } from "@/components/category-tabs";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ProjectCard } from "@/components/project-card";
 import { ProjectHero } from "@/components/project-hero";
+import { getUiMessages } from "@/lib/i18n";
 
 function buildVisibleProjects(selected: string): Project[] {
   if (selected === "all") {
@@ -33,6 +43,7 @@ function buildVisibleProjects(selected: string): Project[] {
 export function PortfolioPage() {
   const [locale, setLocale] = useState<Locale>("vi");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const t = getUiMessages(locale);
 
   const visibleProjects = useMemo(
     () => buildVisibleProjects(selectedCategory),
@@ -55,7 +66,7 @@ export function PortfolioPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200">
                 <Sparkles className="h-3.5 w-3.5" />
-                {locale === "vi" ? "Premium Portfolio" : "Premium Portfolio"}
+                {t.portfolioBadge}
               </div>
               <LanguageToggle locale={locale} onChange={setLocale} />
             </div>
@@ -76,12 +87,76 @@ export function PortfolioPage() {
             <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/35 px-3 py-1.5 text-slate-200">
                 <BriefcaseBusiness className="h-3.5 w-3.5 text-blue-300" />
-                Sales · Food Delivery · Booking · Landing Page · Portfolio
+                {t.serviceTags}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/35 px-3 py-1.5 text-slate-200">
                 <Languages className="h-3.5 w-3.5 text-blue-300" />
-                {locale === "vi" ? "Ho tro tieng Viet & English" : "Vietnamese & English support"}
+                {t.languageSupport}
               </span>
+            </div>
+
+            <div className="grid gap-3 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm sm:grid-cols-2">
+              <div className="space-y-2 text-slate-200">
+                <div className="inline-flex items-center gap-2 text-cyan-100">
+                  <MapPin className="h-4 w-4" />
+                  <span className="font-medium">{t.topInfo.location}:</span>
+                  <span>{profileContent.location}</span>
+                </div>
+                <a
+                  href={`mailto:${profileContent.contact.email}`}
+                  className="inline-flex items-center gap-2 transition-colors hover:text-white"
+                >
+                  <Mail className="h-4 w-4 text-blue-300" />
+                  <span className="font-medium">{t.topInfo.email}:</span>
+                  <span>{profileContent.contact.email}</span>
+                </a>
+                <a
+                  href={`tel:${profileContent.contact.phone.replace(/\s+/g, "")}`}
+                  className="inline-flex items-center gap-2 transition-colors hover:text-white"
+                >
+                  <Phone className="h-4 w-4 text-blue-300" />
+                  <span className="font-medium">{t.topInfo.phone}:</span>
+                  <span>{profileContent.contact.phone}</span>
+                </a>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="w-full text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+                  {t.topInfo.social}
+                </span>
+                <a
+                  href={profileContent.social.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-xs font-medium text-slate-100 transition-colors hover:border-blue-400/40 hover:bg-blue-500/15"
+                >
+                  <Globe className="h-3.5 w-3.5" />
+                  {t.actions.openGithub}
+                </a>
+                <a
+                  href={profileContent.social.facebook}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-xs font-medium text-slate-100 transition-colors hover:border-blue-400/40 hover:bg-blue-500/15"
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                  {t.actions.openFacebook}
+                </a>
+                <a
+                  href={`mailto:${profileContent.contact.email}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-xs font-medium text-slate-100 transition-colors hover:border-blue-400/40 hover:bg-blue-500/15"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  {t.actions.emailNow}
+                </a>
+                <a
+                  href={`tel:${profileContent.contact.phone.replace(/\s+/g, "")}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-xs font-medium text-slate-100 transition-colors hover:border-blue-400/40 hover:bg-blue-500/15"
+                >
+                  <Phone className="h-3.5 w-3.5" />
+                  {t.actions.callNow}
+                </a>
+              </div>
             </div>
 
             <p className="text-sm font-medium text-cyan-100">{profileContent.cta[locale]}</p>
@@ -100,12 +175,10 @@ export function PortfolioPage() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold text-white sm:text-3xl">
-                {locale === "vi" ? "Du an da trien khai" : "Delivered Projects"}
+                {t.projectsTitle}
               </h2>
               <p className="mt-1 text-sm text-slate-300">
-                {locale === "vi"
-                  ? "Danh sach du an theo category. Them du an moi trong data.ts, UI se tu dong render layout dong."
-                  : "Projects grouped by category. Add new entries to data.ts and the UI auto-renders dynamic layouts."}
+                {t.projectsSubtitle}
               </p>
             </div>
             <CategoryTabs

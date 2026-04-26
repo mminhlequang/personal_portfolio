@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Code2, Globe } from "lucide-react";
 import type { Locale, Project } from "@/lib/data";
+import { getUiMessages } from "@/lib/i18n";
 
 type ProjectHeroProps = {
   project: Project;
@@ -11,6 +12,8 @@ type ProjectHeroProps = {
 };
 
 export function ProjectHero({ project, locale }: ProjectHeroProps) {
+  const t = getUiMessages(locale);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -26,7 +29,7 @@ export function ProjectHero({ project, locale }: ProjectHeroProps) {
       <div className="relative grid items-center gap-8 lg:grid-cols-12">
         <div className="lg:col-span-6">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-blue-200/90">
-            {locale === "vi" ? "Du an trong tam" : "Featured Project"}
+            {t.featuredProject}
           </p>
           <h2 className="mb-4 text-3xl font-bold leading-tight text-white md:text-4xl">
             {project.title[locale]}
@@ -55,7 +58,7 @@ export function ProjectHero({ project, locale }: ProjectHeroProps) {
                 className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-blue-50"
               >
                 <Globe className="h-4 w-4" />
-                {locale === "vi" ? "Xem website" : "Visit site"}
+                {t.visitWebsite}
                 <ArrowUpRight className="h-4 w-4" />
               </a>
             ) : null}
